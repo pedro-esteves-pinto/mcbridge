@@ -7,9 +7,9 @@ include(cmake/safe_dep_glob.cmake)
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
   -Wall \
   -pedantic \
-  -Wno-format-security \
   -Wextra \
-  -std=c++2a\
+  --std=c++17\
+  -fdiagnostics-color \
   -Werror ")
 
 set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} \
