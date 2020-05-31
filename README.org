@@ -11,6 +11,8 @@ $ mcbridge server
 #+END_SRC  
 * Build
 #+BEGIN_SRC 
-$ git clone mcbrdige && cd bridge && mkdir build && cd build && cmake .. &&  make
+$ git clone --recursive https://github.com/pedro-esteves-pinto/mcbridge.git
+$ cd mcbridge
+$ cmake .
+$ make 
 #+END_SRC  - 
-
