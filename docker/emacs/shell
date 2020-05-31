@@ -1,0 +1,27 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+docker run \
+      --rm \
+      --net host \
+      -i \
+      -h $(hostname)_mcbridge \
+      -v /etc/passwd:/etc/passwd \
+      -e "TZ=America/New_York" \
+      --security-opt seccomp=unconfined \
+      -v /var/log/syslog:/var/log/syslog \
+      -v /usr/local/share/fonts:/usr/local/share/fonts \
+      -v /usr/share/fonts:/usr/share/fonts \
+      -v /etc/group:/etc/group \
+      -v /run/user/:/run/user/ \
+      -v /tmp:/tmp \
+      --shm-size=4024m \
+      -w $DIR/.. \
+      -u $UID \
+      -v /home:/home \
+      -e DISPLAY=$DISPLAY \
+      -t mcbridge_emacs \
+      /bin/bash
+      
+

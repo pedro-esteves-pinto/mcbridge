@@ -1,0 +1,16 @@
+* Overview
+mcbridge is a multicast bridge, useful to ferry multicast traffic between two machines over a TCP connection.
+* Usage
+- On the machine that has access to multicast, that is the server machine:
+#+BEGIN_SRC 
+$ mcbridge server
+#+END_SRC  - 
+- On the machine that does not have access to multicast, that is the client machine:
+#+BEGIN_SRC 
+  $ mcbridge client <server address>
+#+END_SRC  
+* Build
+#+BEGIN_SRC 
+$ git clone mcbrdige && cd bridge && mkdir build && cd build && cmake .. &&  make
+#+END_SRC  - 
+

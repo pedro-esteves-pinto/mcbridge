@@ -1,0 +1,5 @@
+* TODOs
+** TODO Better parsing of arguments
+** TODO Explicit passing of multicast groups to join
+** TODO Add heartbeats
+** TODO Use coroutines
