@@ -16,7 +16,6 @@ namespace mcbridge {
 enum class Client::State { PAUSED, CONNECTING, RUNNING };
 
 struct Client::ConnectionRec {
-
    ConnectionRec(asio::ip::tcp::socket &s,
                  ClientConnection::OnMessage const &on_msg,
                  ClientConnection::OnDisconnect const &on_disc)
@@ -116,8 +115,8 @@ void Client::connect() {
 
 std::set<EndPoint> Client::get_current_groups() {
    std::set<EndPoint> result;
-   for (auto &[ep, _] : me->connection.value().senders)
-      result.insert(ep);
+   for (auto &p : me->connection.value().senders)
+      result.insert(p.first);
    return result;
 }
 

@@ -4,3 +4,4 @@
 /.idea/
 /.clangd/
 /.vscode/
+/compile_commands.json
