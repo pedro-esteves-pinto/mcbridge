@@ -160,8 +160,8 @@ void ServerConnection::shutdown() {
    if (me->socket.is_open()) {
       LOG(info) << "Closing connection to " << me->remote_endpoint;
       me->socket.close();
-      for (auto &[_, sub_id] : me->subscriptions)
-         me->group_manager.remove_subscriber(sub_id);
+      for (auto &p : me->subscriptions)
+         me->group_manager.remove_subscriber(p.second);
       me->subscriptions.clear();
    }
 }
