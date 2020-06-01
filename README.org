@@ -1,5 +1,5 @@
 * Overview
-mcbridge is a multicast bridge, useful to ferry multicast traffic between two machines over a TCP connection.
+mcbridge is a multicast bridge, useful to, err, bridge multicast traffic between two machines over a TCP connection.
 * Usage
 - On the machine that has access to multicast, that is the server machine:
 #+BEGIN_SRC 
