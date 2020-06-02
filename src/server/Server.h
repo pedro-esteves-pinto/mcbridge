@@ -1,20 +1,21 @@
 #pragma once
 
-#include <memory>
 #include "ServerConfig.h"
+#include <memory>
 
 namespace mcbridge {
 
 class Server {
-public:
-   Server(ServerConfig const&);
+ public:
+   Server(ServerConfig const &);
    ~Server();
    int run();
-private:
+
+ private:
    void accept();
-   
+
    struct PImpl;
    std::unique_ptr<PImpl> me;
 };
 
-}
+} // namespace mcbridge

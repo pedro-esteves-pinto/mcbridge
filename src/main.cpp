@@ -4,9 +4,8 @@
 #include "server/Server.h"
 
 #include <iostream>
-#include <vector>
 #include <string>
-
+#include <vector>
 
 int help() {
    std::cerr << "mcbridge client|server\n";

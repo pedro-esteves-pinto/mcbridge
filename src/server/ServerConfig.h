@@ -1,15 +1,15 @@
 #pragma once
 
 #include <stdint.h>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace mcbridge {
 
 class ServerConfig {
-public:
-   ServerConfig(std::vector<std::string> const&) ;
-   uint16_t port; 
+ public:
+   ServerConfig(std::vector<std::string> const &);
+   uint16_t port;
 };
 
-}
+} // namespace mcbridge

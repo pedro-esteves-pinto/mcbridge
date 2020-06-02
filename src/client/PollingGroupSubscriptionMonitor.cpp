@@ -9,6 +9,4 @@ std::set<EndPoint> PollingGroupSubscriptionMonitor::get_subscribed_groups() {
    return get_joined_groups();
 }
 
-
 } // namespace mcbridge
-

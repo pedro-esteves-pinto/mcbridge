@@ -3,11 +3,11 @@
 
 namespace mcbridge {
 
-ServerConfig::ServerConfig(std::vector<std::string> const&args) {
+ServerConfig::ServerConfig(std::vector<std::string> const &args) {
    if (args.size() > 2)
       port = std::stoi(args[2]);
    else
       port = default_port();
 }
 
-}
+} // namespace mcbridge

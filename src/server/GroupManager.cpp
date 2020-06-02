@@ -14,7 +14,7 @@ struct GroupManager::Subscriber {
 
 struct GroupManager::Group {
    Group(asio::io_context &ctx, EndPoint ep)
-      : receiver(new MCastReceiver(ctx, 0, ep)) {
+       : receiver(new MCastReceiver(ctx, 0, ep)) {
       receiver->start();
    }
    std::shared_ptr<MCastReceiver> receiver;
@@ -27,8 +27,7 @@ struct GroupManager::PImpl {
    size_t next_sub_id = 1;
 };
 
-GroupManager::GroupManager(asio::io_context &ctx)
-    : me(new PImpl{ctx, {}}) {}
+GroupManager::GroupManager(asio::io_context &ctx) : me(new PImpl{ctx, {}}) {}
 
 GroupManager::~GroupManager() {}
 
@@ -58,7 +57,7 @@ void GroupManager::remove_subscriber(SubID id) {
          if (sub_it->sub_id == id) {
             group->subscribers.erase(sub_it);
             if (group->subscribers.empty()) {
-               group->receiver->on_receive() = [] (auto const&) {};
+               group->receiver->stop();
                me->groups.erase(end_point);
                return;
             }

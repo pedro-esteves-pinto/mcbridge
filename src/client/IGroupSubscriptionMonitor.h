@@ -6,9 +6,9 @@
 namespace mcbridge {
 
 class IGroupSubscriptionMonitor {
-public:
+ public:
    virtual std::set<EndPoint> get_subscribed_groups() = 0;
    virtual ~IGroupSubscriptionMonitor() {}
 };
 
-}
+} // namespace mcbridge

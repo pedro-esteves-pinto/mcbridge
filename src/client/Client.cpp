@@ -68,7 +68,7 @@ void Client::schedule_timer() {
 
 void Client::on_timer() {
    schedule_timer();
-   
+
    switch (me->state) {
    case State::CONNECTING:
       break;
@@ -79,7 +79,7 @@ void Client::on_timer() {
       break;
    case State::RUNNING:
       if (sec_diff(Timer::now(),
-                   me->connection.value().last_joined_group_scan) > 10)  {
+                   me->connection.value().last_joined_group_scan) > 10) {
          me->connection.value().last_joined_group_scan = Timer::now();
          update_joined_groups();
       }
@@ -137,7 +137,7 @@ void Client::update_joined_groups() {
    auto &connection = me->connection.value().connection;
    auto &senders = me->connection.value().senders;
    for (auto ep : to_add) {
-      LOG(info) << "Adding multicast group: " << ep ;
+      LOG(info) << "Adding multicast group: " << ep;
       senders[ep] = MCastSender{me->io_service, ep};
       connection->join_group(ep);
    }
@@ -160,8 +160,7 @@ void Client::on_msg(Message const &m) {
       auto &senders = me->connection.value().senders;
       auto it = senders.find(m.header.end_point);
       if (it != senders.end()) {
-         LOG(diag) << "Received datagram for " << m.header.end_point;
-         it->second.send_bytes({m.payload.data(), m.payload.size()});
+         it->second.send_bytes({m.payload.data(), m.header.payload_size});
       }
       break;
    }

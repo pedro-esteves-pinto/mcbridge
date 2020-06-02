@@ -65,14 +65,14 @@ void ServerConnection::on_timer() {
             m.header.payload_size = 0;
             m.header.type = MessageType::HB;
             auto self = shared_from_this();
-            me->socket.async_send(
-                asio::buffer(&m, sizeof(MessageHeader)),
-                [this, self](auto ec, auto) {
-                   if (ec) {
-                      LOG(info) << "Error sending HB to" << me->remote_endpoint;
-                      shutdown();
-                   }
-                });
+            me->socket.async_send(asio::buffer(&m, sizeof(MessageHeader)),
+                                  [this, self](auto ec, auto) {
+                                     if (ec) {
+                                        LOG(info) << "Error sending HB to"
+                                                  << me->remote_endpoint;
+                                        shutdown();
+                                     }
+                                  });
          }
          schedule_timer();
       }
@@ -144,15 +144,15 @@ void ServerConnection::on_datagram(Message const &m) {
       LOG(diag) << "Forwarding multicast datagram on " << m.header.end_point
                 << " to " << me->remote_endpoint;
       auto self = shared_from_this();
-      me->socket.async_send(asio::buffer(&m, sizeof(MessageHeader) +
-                                                        m.header.payload_size),
-                            [this, self](auto ec, auto) {
-                               if (ec) {
-                                  LOG(info) << "Error sending datagram to "
-                                            << me->remote_endpoint;
-                                  shutdown();
-                               }
-                            });
+      me->socket.async_send(
+          asio::buffer(&m, sizeof(MessageHeader) + m.header.payload_size),
+          [this, self](auto ec, auto) {
+             if (ec) {
+                LOG(info) << "Error sending datagram to "
+                          << me->remote_endpoint;
+                shutdown();
+             }
+          });
    }
 }
 

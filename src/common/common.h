@@ -2,12 +2,12 @@
 
 #include <array>
 #include <chrono>
-#include <stdint.h>
 #include <iostream>
-#include <sstream>
 #include <optional>
-#include <vector>
 #include <set>
+#include <sstream>
+#include <stdint.h>
+#include <vector>
 
 namespace mcbridge {
 
@@ -38,10 +38,10 @@ std::ostream &operator<<(std::ostream &out, EndPoint const &);
 
 uint32_t resolve_host_name(std::string const &);
 std::set<EndPoint> get_joined_groups();
-std::string to_quad(uint32_t ip); 
-uint32_t from_quad(std::string const&);
+std::string to_quad(uint32_t ip);
+uint32_t from_quad(std::string const &);
 
-std::vector<std::string> split(const std::string& str, char delim);
+std::vector<std::string> split(const std::string &str, char delim);
 
 struct MessageHeader {
    MessageType type;
@@ -59,29 +59,27 @@ enum class log { diag, info, warn, error, fatal };
 void set_log_level(log);
 log get_log_level();
 
-class Logger
-{
-public:
+class Logger {
+ public:
    Logger() : _msg() {}
-   ~Logger() {std::cout << _msg.str() << "\n";}
-   
-   template <class T> Logger& operator<<(const T &v)
-   {
-      _msg << v; 
+   ~Logger() { std::cout << _msg.str() << "\n"; }
+
+   template <class T> Logger &operator<<(const T &v) {
+      _msg << v;
       return *this;
    }
 
    // used to support LOG macro
    struct DummyType {
-      bool operator==(const DummyType &)  const {return false;}
+      bool operator==(const DummyType &) const { return false; }
    };
-   operator DummyType() {return dummy;}
+   operator DummyType() { return dummy; }
    static DummyType dummy;
 
-private:
+ private:
    std::ostringstream _msg;
 };
 
-#define LOG(LEVEL) (log::LEVEL >= get_log_level()) &&  Logger::dummy == Logger()
+#define LOG(LEVEL) (log::LEVEL >= get_log_level()) && Logger::dummy == Logger()
 
 } // namespace mcbridge

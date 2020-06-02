@@ -86,6 +86,7 @@ void ClientConnection::read_header() {
              else
                 read_header();
           } else {
+             LOG(diag) << "Error reading header " << ec;
              shutdown();
           }
        });
@@ -95,10 +96,11 @@ void ClientConnection::read_payload() {
    auto self = shared_from_this();
    me->socket.async_receive(
        asio::buffer(&me->buffer.payload, me->buffer.header.payload_size),
-       [this, self](auto ec, auto) {
+       [this, self](auto ec, auto count) {
           if (!ec) {
-             LOG(diag) << "Received datagram for "
-                       << me->buffer.header.end_point;
+             LOG(diag) << "Received " << count << " bytes datagram for "
+                       << me->buffer.header.end_point
+                       << " expected: " << me->buffer.header.payload_size;
              me->on_message(me->buffer);
              read_header();
           } else {

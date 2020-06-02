@@ -1,11 +1,11 @@
 #pragma once
 
 #include "../common/common.h"
+#include <asio/io_service.hpp>
 #include <functional>
 #include <memory>
 #include <string>
 #include <string_view>
-#include <asio/io_service.hpp>
 
 namespace mcbridge {
 
@@ -17,6 +17,7 @@ class MCastSender {
    MCastSender(asio::io_service &io, EndPoint destination);
    ~MCastSender();
    void send_bytes(std::string_view const &bytes);
+
  private:
    struct PImpl;
    std::unique_ptr<PImpl> me;
