@@ -49,7 +49,6 @@ void MCastReceiver::stop() {
 void MCastReceiver::receive() {
    if (me->shutdown)
       return;
-   LOG(diag) << "MCastReceiver::receive: " << me->group;
    auto self = shared_from_this();
    me->socket.async_receive_from(
        asio::buffer(me->buffer.data(), me->buffer.size()), me->sender_endpoint,

@@ -27,8 +27,8 @@ struct EndPoint {
    uint32_t ip;
    uint16_t port;
    bool operator<(EndPoint const &rhs) const {
-      if (ip < rhs.ip)
-         return true;
+      if (ip != rhs.ip)
+         return ip < rhs.ip;
       else
          return port < rhs.port;
    }
@@ -62,7 +62,7 @@ log get_log_level();
 class Logger {
  public:
    Logger() : _msg() {}
-   ~Logger() { std::cout << _msg.str() << "\n"; }
+   ~Logger() { std::cout << _msg.str() << std::endl; }
 
    template <class T> Logger &operator<<(const T &v) {
       _msg << v;

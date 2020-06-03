@@ -50,6 +50,7 @@ void ClientConnection::join_group(EndPoint ep) {
    Message m;
    m.header.end_point = ep;
    m.header.type = MessageType::JOIN;
+   m.header.payload_size = 0;
    me->last_sent_hb = Timer::now();
    LOG(info) << "Joining group " << ep;
    auto self = shared_from_this();
@@ -64,6 +65,8 @@ void ClientConnection::leave_group(EndPoint ep) {
    Message m;
    m.header.end_point = ep;
    m.header.type = MessageType::LEAVE;
+   m.header.payload_size = 0;
+   me->last_sent_hb = Timer::now();
    me->last_sent_hb = Timer::now();
    LOG(info) << "Leaving group " << ep;
    auto self = shared_from_this();
@@ -86,7 +89,7 @@ void ClientConnection::read_header() {
              else
                 read_header();
           } else {
-             LOG(diag) << "Error reading header " << ec;
+             LOG(diag) << "Error reading header " << ec.message();
              shutdown();
           }
        });
@@ -96,14 +99,14 @@ void ClientConnection::read_payload() {
    auto self = shared_from_this();
    me->socket.async_receive(
        asio::buffer(&me->buffer.payload, me->buffer.header.payload_size),
-       [this, self](auto ec, auto count) {
+       [this, self](auto ec, auto ) {
           if (!ec) {
-             LOG(diag) << "Received " << count << " bytes datagram for "
-                       << me->buffer.header.end_point
-                       << " expected: " << me->buffer.header.payload_size;
              me->on_message(me->buffer);
              read_header();
           } else {
+             LOG(info) << "Error reading paylod for "
+                       << me->buffer.header.end_point
+                       << " error: " << ec.message();
              shutdown();
           }
        });

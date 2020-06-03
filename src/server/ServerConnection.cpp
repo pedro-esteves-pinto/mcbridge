@@ -89,22 +89,27 @@ void ServerConnection::read() {
              me->last_rcvd_hb = Timer::now();
              read();
           } else {
-             LOG(info) << "Error reading from " << me->remote_endpoint;
+             LOG(info) << "Error reading from " << me->remote_endpoint
+                       << " error: " << ec.message();
              shutdown();
           }
        });
 }
 
 bool ServerConnection::on_msg(MessageHeader const &header) {
-   if (header.payload_size != 0)
+   if (header.payload_size != 0) {
+      LOG(error) << "Received malformed message from " << me->remote_endpoint;
       return false;
+   }
    switch (header.type) {
    case MessageType::JOIN:
       return join(header.end_point);
    case MessageType::LEAVE:
       return leave(header.end_point);
-   case MessageType::MC_DATAGRAM:
+   case MessageType::MC_DATAGRAM: {
+      LOG(error) << "Received unexpected message from " << me->remote_endpoint;
       return false;
+   }
    case MessageType::HB:
       LOG(diag) << "Received HB from " << me->remote_endpoint;
       return true;
@@ -141,8 +146,6 @@ bool ServerConnection::leave(EndPoint const &end_point) {
 
 void ServerConnection::on_datagram(Message const &m) {
    if (me->socket.is_open()) {
-      LOG(diag) << "Forwarding multicast datagram on " << m.header.end_point
-                << " to " << me->remote_endpoint;
       auto self = shared_from_this();
       me->socket.async_send(
           asio::buffer(&m, sizeof(MessageHeader) + m.header.payload_size),

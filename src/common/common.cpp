@@ -88,16 +88,18 @@ std::set<EndPoint> get_joined_groups() {
          network_order_ip |= ((ip & 0x0000ff00) << 8);
          network_order_ip |= ((ip & 0x00ff0000) >> 8);
          network_order_ip |= ((ip & 0xff000000) >> 24);
-
          /*
          224.0.2.0 to 224.0.255.255	AD-HOC block 1
          224.3.0.0 to 224.4.255.255	AD-HOC block 2
+         233.0.0.0 to 233.251.255.255	GLOP addressing
          233.252.0.0 to 233.255.255.255	AD-HOC block 3
          */
          if ((network_order_ip >= from_quad("224.0.2.0") &&
               network_order_ip <= from_quad("224.0.255.255")) ||
              (network_order_ip >= from_quad("224.3.0.0") &&
               network_order_ip <= from_quad("224.4.255.255")) ||
+             (network_order_ip >= from_quad("233.0.0.0") &&
+              network_order_ip <= from_quad("233.251.255.255")) ||
              (network_order_ip >= from_quad("233.252.0.0") &&
               network_order_ip <= from_quad("233.255.255.255"))) {
             result.insert({network_order_ip, port});
