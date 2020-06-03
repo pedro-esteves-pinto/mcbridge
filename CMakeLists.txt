@@ -4,8 +4,10 @@ project(mcbridge)
 # helpers to make it safe to use globing to define files in build
 include(cmake/safe_dep_glob.cmake)
 
+
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
   -Wall \
+  -g \
   -pedantic \
   -Wextra \
   --std=c++17\
@@ -17,7 +19,9 @@ set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} \
   -flto \
   -O3")
 
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS_RELEASE})
+if(NOT DEFINED ${CMAKE_BUILD_TYPE})
+  set (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS_RELEASE})
+endif()
 
 file(GLOB_RECURSE SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/*.cpp)
 
