@@ -10,6 +10,7 @@ struct ClientConnection::PImpl {
    Message buffer;
    TimeStamp last_sent_hb;
    TimeStamp last_rcvd_hb;
+   size_t n_packets = 0;
 };
 
 ClientConnection::ClientConnection(asio::ip::tcp::socket &s,
@@ -101,6 +102,8 @@ void ClientConnection::read_payload() {
        asio::buffer(&me->buffer.payload, me->buffer.header.payload_size),
        [this, self](auto ec, auto ) {
           if (!ec) {
+             LOG(info) << "Received datagram " << me->n_packets++ << " for " << me->buffer.header.end_point
+                       << " first 64: " << (uint64_t*) me->buffer.payload.data();
              me->on_message(me->buffer);
              read_header();
           } else {

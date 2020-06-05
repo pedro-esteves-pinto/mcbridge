@@ -15,6 +15,7 @@ EndPoint get_server_endpoint(std::vector<std::string> const &args) {
 
 ClientConfig::ClientConfig(std::vector<std::string> const &args)
     : poll_joined_groups(true), joined_groups(),
-      server_address(get_server_endpoint(args)) {}
+      server_address(get_server_endpoint(args)) {
+}
 
 } // namespace mcbridge

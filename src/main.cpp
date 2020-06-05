@@ -2,13 +2,14 @@
 #include "client/ClientConfig.h"
 #include "common/common.h"
 #include "server/Server.h"
+#include "test/Test.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
 
 int help() {
-   std::cerr << "mcbridge client|server\n";
+   std::cerr << "mcbridge client <host>|server|test_sender group|test_receiver group\n";
    return 1;
 }
 
@@ -27,8 +28,12 @@ int main(int argc, char **argv) {
    } else if (args[1] == "server") {
       Server server(ServerConfig{args});
       return server.run();
-   } else
+   } else if (args[1] == "test_sender") {
+      Test::send({args[2]});
+   }
+   else if (args[1] == "test_receiver") {
+      Test::receive({args[2]});
+   }
+   else
       return help();
-
-   std::string s;
 }

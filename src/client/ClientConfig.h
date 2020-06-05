@@ -10,9 +10,9 @@ namespace mcbridge {
 class ClientConfig {
  public:
    ClientConfig(std::vector<std::string> const &);
-   const bool poll_joined_groups;
-   const std::set<EndPoint> joined_groups;
-   const EndPoint server_address;
+   bool poll_joined_groups;
+   std::set<EndPoint> joined_groups;
+   EndPoint server_address;
 };
 
 } // namespace mcbridge

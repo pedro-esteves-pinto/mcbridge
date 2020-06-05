@@ -28,6 +28,20 @@ std::ostream &operator<<(std::ostream &out, EndPoint const &ep) {
    return out;
 }
 
+std::istream &operator>>(std::istream &in, EndPoint &ep) {
+   std::string ip_port;
+   in >> ip_port;
+   auto fields = split(ip_port,':');
+   ep.ip = from_quad(fields[0]);
+   ep.port  = std::stoi(fields[1]);
+   return in;
+}
+
+EndPoint::EndPoint(std::string const&str) {
+   std::stringstream s(str);
+   s >>  *this;
+}
+
 std::vector<std::string> split(const std::string &str, char delim) {
    std::vector<std::string> result;
    enum class State { DELIM, TOKEN };

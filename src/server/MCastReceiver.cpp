@@ -14,6 +14,7 @@ struct MCastReceiver::PImpl {
    std::array<char, (1 << 16) - 1> buffer;
    EndPoint group;
    bool shutdown;
+   size_t n_packets;
 };
 
 MCastReceiver::MCastReceiver(asio::io_service &io, uint32_t listen_ip,
@@ -24,7 +25,6 @@ MCastReceiver::MCastReceiver(asio::io_service &io, uint32_t listen_ip,
 
    // The interface (NIC) we are going to use
    auto listen_addr = ip::address_v4(listen_ip);
-   // auto listen_endpoint = ip::udp::endpoint(listen_addr, group.port);
    auto listen_endpoint = ip::udp::endpoint(listen_addr, group.port);
 
    // The multicast group we are going to use
@@ -54,6 +54,8 @@ void MCastReceiver::receive() {
        asio::buffer(me->buffer.data(), me->buffer.size()), me->sender_endpoint,
        [self, this](auto ec, auto bytes_recvd) {
           if (!ec) {
+             LOG(info) << "Sending packet " << me->n_packets++ << " to " << me->group
+                       << " first 64: " << (uint64_t*) me->buffer.data();
              me->on_bytes({me->buffer.data(), bytes_recvd});
              receive();
           } else

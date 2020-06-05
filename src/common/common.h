@@ -23,9 +23,15 @@ inline int64_t sec_diff(TimeStamp t1, TimeStamp t2) {
 
 enum class MessageType { JOIN, LEAVE, HB, MC_DATAGRAM };
 
+
 struct EndPoint {
    uint32_t ip;
    uint16_t port;
+
+   EndPoint(std::string const&);
+   EndPoint (uint32_t ip, uint16_t port) : ip(ip), port(port) {}
+   EndPoint () : ip(0), port(0) {}
+   
    bool operator<(EndPoint const &rhs) const {
       if (ip != rhs.ip)
          return ip < rhs.ip;
@@ -35,6 +41,7 @@ struct EndPoint {
 };
 
 std::ostream &operator<<(std::ostream &out, EndPoint const &);
+std::istream &operator>>(std::istream &in, EndPoint &);
 
 uint32_t resolve_host_name(std::string const &);
 std::set<EndPoint> get_joined_groups();
