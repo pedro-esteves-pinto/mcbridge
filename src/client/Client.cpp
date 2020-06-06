@@ -3,8 +3,6 @@
 #include "ClientConnection.h"
 #include "IGroupSubscriptionMonitor.h"
 #include "MCastSender.h"
-#include "PollingGroupSubscriptionMonitor.h"
-#include "StaticGroupSubscriptionMonitor.h"
 
 #include <algorithm>
 #include <asio.hpp>
@@ -19,13 +17,11 @@ struct Client::ConnectionRec {
    ConnectionRec(asio::ip::tcp::socket &s,
                  ClientConnection::OnMessage const &on_msg,
                  ClientConnection::OnDisconnect const &on_disc)
-       : last_joined_group_scan(Timer::now()),
-         connection(std::make_shared<ClientConnection>(s, on_msg, on_disc)),
+       : connection(std::make_shared<ClientConnection>(s, on_msg, on_disc)),
          senders() {
       connection->start();
    }
 
-   TimeStamp last_joined_group_scan;
    std::shared_ptr<ClientConnection> connection;
    std::map<EndPoint, MCastSender> senders;
 };
@@ -33,12 +29,7 @@ struct Client::ConnectionRec {
 struct Client::PImpl {
    PImpl(ClientConfig const &cfg)
        : cfg(cfg), state(State::PAUSED), start_of_pause(), io_service(1),
-         socket(io_service), connection(), sub_monitor(), timer(io_service) {
-      if (cfg.poll_joined_groups)
-         sub_monitor.reset(new PollingGroupSubscriptionMonitor());
-      else
-         sub_monitor.reset(
-             new StaticGroupSubscriptionMonitor(cfg.joined_groups));
+         socket(io_service), connection(), timer(io_service) {
    }
 
    ClientConfig cfg;
@@ -47,7 +38,6 @@ struct Client::PImpl {
    asio::io_service io_service;
    asio::ip::tcp::socket socket;
    std::optional<ConnectionRec> connection;
-   std::unique_ptr<IGroupSubscriptionMonitor> sub_monitor;
    asio::steady_timer timer;
 };
 
@@ -78,11 +68,6 @@ void Client::on_timer() {
       }
       break;
    case State::RUNNING:
-      if (sec_diff(Timer::now(),
-                   me->connection.value().last_joined_group_scan) > 10) {
-         me->connection.value().last_joined_group_scan = Timer::now();
-         update_joined_groups();
-      }
       me->connection.value().connection->on_timer();
       break;
    }
@@ -105,6 +90,12 @@ void Client::connect() {
          me->connection.emplace(
              me->socket, [this](auto const &m) { on_msg(m); },
              [this]() { on_disconnect(); });
+         auto &senders = me->connection.value().senders;
+         for (auto ep : me->cfg.joined_groups) {
+            LOG(info) << "Adding multicast group: " << ep;
+            senders[ep] = MCastSender{me->io_service, ep};
+            me->connection.value().connection->join_group(ep);
+         }
       } else {
          LOG(info) << "Connection failed";
          me->start_of_pause = Timer::now();
@@ -118,34 +109,6 @@ std::set<EndPoint> Client::get_current_groups() {
    for (auto &p : me->connection.value().senders)
       result.insert(p.first);
    return result;
-}
-
-void Client::update_joined_groups() {
-   assert(me->state == State::RUNNING);
-
-   auto new_groups = me->sub_monitor->get_subscribed_groups();
-   auto old_groups = get_current_groups();
-
-   std::set<EndPoint> to_add;
-   std::set<EndPoint> to_remove;
-   std::set_difference(new_groups.begin(), new_groups.end(), old_groups.begin(),
-                       old_groups.end(), std::inserter(to_add, to_add.begin()));
-   std::set_difference(old_groups.begin(), old_groups.end(), new_groups.begin(),
-                       new_groups.end(),
-                       std::inserter(to_remove, to_remove.begin()));
-
-   auto &connection = me->connection.value().connection;
-   auto &senders = me->connection.value().senders;
-   for (auto ep : to_add) {
-      LOG(info) << "Adding multicast group: " << ep;
-      senders[ep] = MCastSender{me->io_service, ep};
-      connection->join_group(ep);
-   }
-   for (auto ep : to_remove) {
-      LOG(info) << "Removing multicast group: " << ep;
-      senders.erase(ep);
-      connection->leave_group(ep);
-   }
 }
 
 void Client::on_msg(Message const &m) {

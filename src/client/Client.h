@@ -16,7 +16,6 @@ class Client {
    enum class State;
    struct ConnectionRec;
 
-   void update_joined_groups();
    void schedule_timer();
    void pause();
    void connect();

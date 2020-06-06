@@ -23,20 +23,14 @@ MCastReceiver::MCastReceiver(asio::io_service &io, uint32_t listen_ip,
    LOG(info) << "Starting multicast receiver for " << me->group;
    using namespace asio;
 
-   // The interface (NIC) we are going to use
-   auto listen_addr = ip::address_v4(listen_ip);
-   auto listen_endpoint = ip::udp::endpoint(listen_addr, group.port);
-
-   // The multicast group we are going to use
-   auto mc_addr = ip::address_v4(group.ip);
-
    // Open the socket
-   me->socket.open(listen_endpoint.protocol());
+   me->socket.open(asio::ip::udp::v4());
    me->socket.set_option(ip::udp::socket::reuse_address(true));
    me->socket.bind(ip::udp::endpoint(ip::address_v4::any(), group.port));
 
-   // Join the group
-   me->socket.set_option(ip::multicast::join_group(mc_addr, listen_addr));
+   // Join the group, on the interface specified by listen_ip
+   me->socket.set_option(ip::multicast::join_group(ip::address_v4(group.ip),
+                                                   ip::address_v4(listen_ip)));
 }
 
 void MCastReceiver::start() { receive(); }

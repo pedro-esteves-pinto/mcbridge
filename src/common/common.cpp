@@ -30,7 +30,7 @@ std::ostream &operator<<(std::ostream &out, EndPoint const &ep) {
 
 std::istream &operator>>(std::istream &in, EndPoint &ep) {
    std::string ip_port;
-   in >> ip_port;
+   in >> std::skipws >> ip_port;
    auto fields = split(ip_port,':');
    ep.ip = from_quad(fields[0]);
    ep.port  = std::stoi(fields[1]);
