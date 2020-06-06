@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
 
    // common options
    mcbridge::log logging_verbosity = mcbridge::log::info;
-   app.add_option("-l", logging_verbosity, "Logging verbosity (0 to 4)");
+   app.add_option("-l", "Logging verbosity (0 to 4)");
 
    // client
    auto client_cmd = app.add_subcommand("client", "Acts a client");
@@ -29,25 +29,25 @@ int main(int argc, char **argv) {
                     "File containing multicast groups to join")
        ->check(CLI::ExistingFile);
    std::vector<std::string> groups;
-   client_cmd->add_option("-g", groups, "Multicast groups to join");
+   client_cmd->add_option("-g", groups, "Multicast groups in the form ip:port");
    uint16_t server_port_c = 30000;
-   client_cmd->add_option("-p", server_port_c, "Server port");
+   client_cmd->add_option("-p", server_port_c, "Server port", 30000);
 
    // server
    auto server_cmd = app.add_subcommand("server", "Acts as a server");
    uint16_t server_port_s = 30000;
-   server_cmd->add_option("-p", server_port_s, "Port to bind to");
+   server_cmd->add_option("-p", server_port_s, "Port to bind to", 30000);
 
    // test_send
    auto test_send = app.add_subcommand(
        "test_send", "Send a small multicast packet every few seconds");
    std::string group_s = "224.0.255.255:30000";
-   test_send->add_option("-g", group_s, "Multicast group to send to");
+   test_send->add_option("-g", group_s, "Multicast group to send to", "224.0.255.255:30000");
 
    auto test_recv = app.add_subcommand(
        "test_recv", "Receive multicast and print a few bytes to screen");
    std::string group_c = "224.0.255.255:30000";
-   test_recv->add_option("-g", group_c, "Multicast group to join");
+   test_recv->add_option("-g", group_c, "Multicast group to join", "224.0.255.255:30000");
 
    CLI11_PARSE(app, argc, argv);
 
