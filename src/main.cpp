@@ -90,10 +90,14 @@ int main(int argc, char **argv) {
 
    set_log_level(logging_verbosity);
 
+   
+   auto interface_ip = 0;
+   if (interface.size())
+      interface_ip = resolve_interface_ip(interface);
+   
    if (*client_cmd) {
       ClientConfig cfg;
-      if (interface.size())
-         cfg.outbound_interface = resolve_interface_ip(interface);
+      cfg.outbound_interface = interface_ip;
       if (groups_file.size())
          cfg.joined_groups = read_groups_from_file(groups_file);
       for (auto &g : groups)
@@ -103,20 +107,12 @@ int main(int argc, char **argv) {
    } else if (*server_cmd) {
       ServerConfig cfg;
       cfg.port = port;
-      if (interface.size())
-         cfg.inbound_interface = resolve_interface_ip(interface);
+      cfg.inbound_interface = interface_ip;
       return Server{cfg}.run();
-   } else if (*test_send) {
-      auto interface_ip = 0;
-      if (interface.size())
-         interface_ip = resolve_interface_ip(interface);
+   } else if (*test_send) 
       return Test::send(group_s, interface_ip);
-   } else if (*test_recv) {
-      auto interface_ip = 0;
-      if (interface.size())
-         interface_ip = resolve_interface_ip(interface);
+   else if (*test_recv) 
       return Test::recv(group_c, interface_ip);
-   }
 
    return -1;
 }
