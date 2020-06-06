@@ -1,7 +1,6 @@
 #include "Client.h"
 #include "../common/common.h"
 #include "ClientConnection.h"
-#include "IGroupSubscriptionMonitor.h"
 #include "MCastSender.h"
 
 #include <algorithm>
