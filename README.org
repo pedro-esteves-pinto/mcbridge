@@ -16,3 +16,7 @@ $ cd mcbridge
 $ mkdir build && cd build && cmake .. 
 $ make 
 #+END_SRC  - 
+* Acknowledgments
+- Thanks to https://github.com/chriskohlhoff for ASIO and https://github.com/CLIUtils/CLI11 for CLI11
+
+
