@@ -31,6 +31,7 @@ add_executable(mcbridge ${SOURCES})
 target_include_directories(mcbridge PUBLIC
   ${CMAKE_SOURCE_DIR}/src
   ${CMAKE_SOURCE_DIR}/external/asio/asio/include
+  ${CMAKE_SOURCE_DIR}/external/
   )
 target_link_libraries(mcbridge pthread)
 

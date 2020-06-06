@@ -54,8 +54,8 @@ void MCastReceiver::receive() {
        asio::buffer(me->buffer.data(), me->buffer.size()), me->sender_endpoint,
        [self, this](auto ec, auto bytes_recvd) {
           if (!ec) {
-             LOG(info) << "Sending packet " << me->n_packets++ << " to " << me->group
-                       << " first 64: " << (uint64_t*) me->buffer.data();
+             LOG(diag) << "Received packet number " << me->n_packets++ << " at " << me->group
+                       << " first 64 bytes: " << *(uint64_t*) me->buffer.data();
              me->on_bytes({me->buffer.data(), bytes_recvd});
              receive();
           } else

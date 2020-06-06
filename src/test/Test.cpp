@@ -15,19 +15,20 @@ struct TestSender {
    }
 
    void schedule_timer() {
-      timer.expires_from_now(std::chrono::seconds(10));
+      timer.expires_from_now(std::chrono::seconds(1));
       timer.async_wait([this](auto) { on_timer(); });
    }
 
    void on_timer() {
       n_packets++;
       n_packets_buffer = n_packets;
+      LOG(info) << "Sending test packet. First 64 bytes: " << n_packets;
       sender.send_bytes ({(char*) &n_packets_buffer,sizeof (n_packets_buffer)});
       schedule_timer();
    }
 
-   void run() {
-      io_service.run();
+   int run() {
+      return io_service.run();
    }
 
    asio::io_service io_service;
@@ -44,13 +45,13 @@ struct TestReceiver {
    {
       receiver->on_receive() = [] (auto const&data) {
          assert(data.size() == sizeof(size_t));
-         LOG(info) << "Received " << *((uint64_t*) data.data());
+         LOG(info) << "Received test packet. First 64 bytes: " << *((uint64_t*) data.data());
       };
    }
 
-   void run () {
+   int run () {
       receiver->start();
-      io_service.run();
+      return io_service.run();
    }
    
    asio::io_service io_service;
@@ -58,14 +59,14 @@ struct TestReceiver {
 };
 
 
-void Test::send(EndPoint const&ep) {
+int Test::send(EndPoint const&ep) {
    TestSender sender(ep);
-   sender.run();
+   return sender.run();
 }
 
-void Test::receive(EndPoint const&ep) {
+int Test::recv(EndPoint const&ep) {
    TestReceiver recv(ep);
-   recv.run();
+   return recv.run();
 }
 
 }

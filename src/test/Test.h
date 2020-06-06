@@ -8,8 +8,8 @@ struct EndPoint;
 
 class Test {
 public:
-   static void send(EndPoint const&ep);
-   static void receive(EndPoint const&ep);
+   static int send(EndPoint const&ep);
+   static int recv(EndPoint const&ep);
 };
 
 }

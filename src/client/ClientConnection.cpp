@@ -100,10 +100,11 @@ void ClientConnection::read_payload() {
    auto self = shared_from_this();
    me->socket.async_receive(
        asio::buffer(&me->buffer.payload, me->buffer.header.payload_size),
-       [this, self](auto ec, auto ) {
+       [this, self](auto ec, auto) {
           if (!ec) {
-             LOG(info) << "Received datagram " << me->n_packets++ << " for " << me->buffer.header.end_point
-                       << " first 64: " << (uint64_t*) me->buffer.payload.data();
+             LOG(diag) << "Received datagram " << me->n_packets++ << " for "
+                       << me->buffer.header.end_point << " first 64 bytes: "
+                       << *(uint64_t *)me->buffer.payload.data();
              me->on_message(me->buffer);
              read_header();
           } else {

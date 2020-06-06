@@ -61,7 +61,13 @@ struct Message {
    std::array<char, std::numeric_limits<uint16_t>::max()> payload;
 };
 
-enum class log { diag, info, warn, error, fatal };
+enum class log {
+   fatal =0,
+   error,
+   warn,
+   info,
+   diag
+};
 
 void set_log_level(log);
 log get_log_level();
@@ -87,6 +93,6 @@ class Logger {
    std::ostringstream _msg;
 };
 
-#define LOG(LEVEL) (log::LEVEL >= get_log_level()) && Logger::dummy == Logger()
+#define LOG(LEVEL) (log::LEVEL <= get_log_level()) && Logger::dummy == Logger()
 
 } // namespace mcbridge

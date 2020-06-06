@@ -154,7 +154,6 @@ void Client::on_msg(Message const &m) {
       assert(false);
       break;
    case State::PAUSED:
-      assert(false);
       break;
    case State::RUNNING: {
       auto &senders = me->connection.value().senders;
@@ -173,7 +172,6 @@ void Client::on_disconnect() {
       assert(false);
       break;
    case State::PAUSED:
-      assert(false);
       break;
    case State::RUNNING:
       me->connection.reset();

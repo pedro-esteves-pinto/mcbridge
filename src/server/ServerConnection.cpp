@@ -148,12 +148,12 @@ bool ServerConnection::leave(EndPoint const &end_point) {
 void ServerConnection::on_datagram(Message const &m) {
    if (me->socket.is_open()) {
       auto self = shared_from_this();
-      LOG(info) << "About to send packet: " << me->n_packets++ << " to " << me->remote_endpoint
-                << " first 64: " << (uint64_t*) m.payload.data();
+      LOG(diag) << "About to send packet: " << me->n_packets++ << " to "
+                << me->remote_endpoint
+                << " first 64: " << *(uint64_t *)m.payload.data();
       me->socket.async_send(
           asio::buffer(&m, sizeof(MessageHeader) + m.header.payload_size),
           [this, self](auto ec, auto) {
-
              if (ec) {
                 LOG(info) << "Error sending datagram to "
                           << me->remote_endpoint;
