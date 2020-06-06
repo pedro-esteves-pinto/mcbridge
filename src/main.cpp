@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
    auto server_cmd = app.add_subcommand("server", "Acts as a server");
    server_cmd->add_option("-p", port, "Port to bind to", 30000);
    server_cmd->add_option("-i", interface,
-                          "Interface to use for multicast");
+                          "Interface to use for inbound multicast");
 
    // test_send
    auto test_send = app.add_subcommand(
