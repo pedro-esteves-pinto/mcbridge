@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
    std::string groups_file;
    client_cmd
       ->add_option("-f", groups_file,
-                   "File containing multicast groups to join")
+                   "Read multicast groups to join from file")
       ->check(CLI::ExistingFile);
    std::vector<std::string> groups;
    client_cmd->add_option("-g", groups, "Multicast groups to join in the form ip:port");
