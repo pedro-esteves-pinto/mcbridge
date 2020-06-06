@@ -13,7 +13,7 @@ struct Server::PImpl {
        : cfg(cfg), io_service(1),
          acceptor(io_service,
                   asio::ip::tcp::endpoint(asio::ip::tcp::v4(), cfg.port)),
-         group_manager(io_service) {}
+         group_manager(io_service,cfg.inbound_interface) {}
 
    ServerConfig cfg;
    asio::io_service io_service;

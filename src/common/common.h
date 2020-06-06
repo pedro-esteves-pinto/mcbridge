@@ -44,6 +44,8 @@ std::ostream &operator<<(std::ostream &out, EndPoint const &);
 std::istream &operator>>(std::istream &in, EndPoint &);
 
 uint32_t resolve_host_name(std::string const &);
+std::optional<uint32_t> get_interface_ip(std::string const &interface);
+
 std::set<EndPoint> get_joined_groups();
 std::string to_quad(uint32_t ip);
 uint32_t from_quad(std::string const &);

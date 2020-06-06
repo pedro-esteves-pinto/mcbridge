@@ -10,7 +10,7 @@ namespace mcbridge {
 
 class MCastReceiver : public std::enable_shared_from_this<MCastReceiver> {
  public:
-   MCastReceiver(asio::io_service &io, uint32_t listen_ip, EndPoint mc_group);
+   MCastReceiver(asio::io_service &io, EndPoint mc_group, uint32_t listen_ip);
    ~MCastReceiver();
    void start();
    void stop();

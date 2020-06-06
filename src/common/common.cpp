@@ -3,6 +3,14 @@
 #include <fstream>
 #include <sstream>
 
+#include <arpa/inet.h>
+#include <ifaddrs.h>
+#include <linux/if_link.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <unistd.h>
 namespace mcbridge {
 
 static enum log level = log::error;
@@ -120,6 +128,41 @@ std::set<EndPoint> get_joined_groups() {
          }
       }
    }
+   return result;
+}
+
+std::optional<uint32_t> get_interface_ip(std::string const &interface) {
+   struct ifaddrs *ifaddr, *ifa;
+   int family, s;
+   char host[NI_MAXHOST];
+
+   std::optional<uint32_t> result;
+
+   if (getifaddrs(&ifaddr) == -1)
+      return {};
+
+   for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+      if (ifa->ifa_addr == NULL)
+         continue;
+
+      family = ifa->ifa_addr->sa_family;
+
+      if (family == AF_INET) {
+         s = getnameinfo(ifa->ifa_addr,
+                         (family == AF_INET) ? sizeof(struct sockaddr_in)
+                                             : sizeof(struct sockaddr_in6),
+                         host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
+         if (s != 0)
+            break;
+
+         if (interface == ifa->ifa_name) {
+            result = from_quad(std::string{host});
+            break;
+         }
+      }
+   }
+
+   freeifaddrs(ifaddr);
    return result;
 }
 

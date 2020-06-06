@@ -148,7 +148,7 @@ bool ServerConnection::leave(EndPoint const &end_point) {
 void ServerConnection::on_datagram(Message const &m) {
    if (me->socket.is_open()) {
       auto self = shared_from_this();
-      LOG(diag) << "About to send packet: " << me->n_packets++ << " to "
+      LOG(info) << "About to send packet: " << me->n_packets++ << " to "
                 << me->remote_endpoint
                 << " first 64: " << *(uint64_t *)m.payload.data();
       me->socket.async_send(

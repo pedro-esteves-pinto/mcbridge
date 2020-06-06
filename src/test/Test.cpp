@@ -7,9 +7,9 @@
 namespace mcbridge {
 
 struct TestSender {
-   TestSender(EndPoint const&ep) :
+   TestSender(EndPoint const&ep,uint32_t interface) :
       io_service(1), timer(io_service),
-      sender(io_service,ep)
+      sender(io_service,ep,interface)
    {
       schedule_timer();
    }
@@ -39,9 +39,9 @@ struct TestSender {
 };
 
 struct TestReceiver {
-   TestReceiver(EndPoint const&ep) :
+   TestReceiver(EndPoint const&ep,uint32_t interface) :
       io_service(1),
-      receiver(std::make_shared<MCastReceiver> (io_service,0,ep))
+      receiver(std::make_shared<MCastReceiver> (io_service,ep,interface))
    {
       receiver->on_receive() = [] (auto const&data) {
          assert(data.size() == sizeof(size_t));
@@ -59,13 +59,13 @@ struct TestReceiver {
 };
 
 
-int Test::send(EndPoint const&ep) {
-   TestSender sender(ep);
+int Test::send(EndPoint const&ep, uint32_t interface) {
+   TestSender sender(ep, interface);
    return sender.run();
 }
 
-int Test::recv(EndPoint const&ep) {
-   TestReceiver recv(ep);
+int Test::recv(EndPoint const&ep,uint32_t interface) {
+   TestReceiver recv(ep,interface);
    return recv.run();
 }
 

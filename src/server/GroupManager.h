@@ -21,7 +21,7 @@ class GroupManager {
  public:
    using OnMessage = std::function<void(Message const &)>;
 
-   GroupManager(asio::io_context &);
+   GroupManager(asio::io_context &, uint32_t interface);
    ~GroupManager();
 
    SubID add_subscriber(EndPoint, OnMessage const &);

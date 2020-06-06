@@ -29,8 +29,7 @@ struct Client::ConnectionRec {
 struct Client::PImpl {
    PImpl(ClientConfig const &cfg)
        : cfg(cfg), state(State::PAUSED), start_of_pause(), io_service(1),
-         socket(io_service), connection(), timer(io_service) {
-   }
+         socket(io_service), connection(), timer(io_service) {}
 
    ClientConfig cfg;
    State state;
@@ -93,7 +92,8 @@ void Client::connect() {
          auto &senders = me->connection.value().senders;
          for (auto ep : me->cfg.joined_groups) {
             LOG(info) << "Adding multicast group: " << ep;
-            senders[ep] = MCastSender{me->io_service, ep};
+            senders[ep] =
+                MCastSender{me->io_service, ep, me->cfg.outbound_interface};
             me->connection.value().connection->join_group(ep);
          }
       } else {

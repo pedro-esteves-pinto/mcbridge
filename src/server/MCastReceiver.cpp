@@ -17,8 +17,7 @@ struct MCastReceiver::PImpl {
    size_t n_packets;
 };
 
-MCastReceiver::MCastReceiver(asio::io_service &io, uint32_t listen_ip,
-                             EndPoint group)
+MCastReceiver::MCastReceiver(asio::io_service &io, EndPoint group, uint32_t listen_ip)
     : me(new PImpl(io, group)) {
    LOG(info) << "Starting multicast receiver for " << me->group;
    using namespace asio;

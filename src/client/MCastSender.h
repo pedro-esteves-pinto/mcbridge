@@ -14,7 +14,7 @@ class MCastSender {
    MCastSender();
    MCastSender(MCastSender &&);
    MCastSender &operator=(MCastSender &&);
-   MCastSender(asio::io_service &io, EndPoint destination);
+   MCastSender(asio::io_service &io, EndPoint destination, uint32_t interface);
    ~MCastSender();
    void send_bytes(std::string_view const &bytes);
 

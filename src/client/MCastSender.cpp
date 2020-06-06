@@ -10,11 +10,17 @@ struct MCastSender::PImpl {
    asio::ip::udp::endpoint endpoint;
 };
 
-MCastSender::MCastSender(asio::io_service &io, EndPoint mc_group)
+MCastSender::MCastSender(asio::io_service &io, EndPoint mc_group,
+                         uint32_t interface_ip)
     : me(new PImpl(io)) {
    using namespace asio;
    me->endpoint = ip::udp::endpoint(ip::address_v4(mc_group.ip), mc_group.port);
    me->socket.open(me->endpoint.protocol());
+   if (interface_ip) {
+      asio::ip::multicast::outbound_interface option{
+          asio::ip::address_v4(interface_ip)};
+      me->socket.set_option(option);
+   }
 }
 
 MCastSender::MCastSender() = default;
