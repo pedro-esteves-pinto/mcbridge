@@ -22,6 +22,7 @@ class Client {
    void on_timer();
    void on_msg(Message const &);
    void on_disconnect();
+   void scan_for_new_joined_groups();
    std::set<EndPoint> get_current_groups();
 
    struct PImpl;

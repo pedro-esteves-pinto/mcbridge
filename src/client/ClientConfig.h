@@ -9,10 +9,12 @@ namespace mcbridge {
 
 class ClientConfig {
  public:
-   bool poll_joined_groups;
-   std::set<EndPoint> joined_groups;
+   bool auto_discover_groups;
+   NetMask auto_discover_mask;
+   std::set<EndPoint> groups_to_join;
    uint32_t outbound_interface;
    EndPoint server_address;
+   uint32_t max_in_flight_datagrams_per_group = 1000;
 };
 
 } // namespace mcbridge

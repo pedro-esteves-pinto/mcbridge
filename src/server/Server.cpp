@@ -34,7 +34,7 @@ void Server::accept() {
    me->acceptor.async_accept([this](auto ec, auto socket) {
       if (!ec) {
          auto c = std::make_shared<ServerConnection>(
-             me->io_service, std::move(socket), me->group_manager);
+            me->io_service, std::move(socket), me->group_manager, me->cfg.max_in_flight_datagrams_per_connection);
          c->start();
       }
       accept();

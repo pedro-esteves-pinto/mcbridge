@@ -9,7 +9,7 @@ namespace mcbridge {
 struct TestSender {
    TestSender(EndPoint const&ep,uint32_t interface) :
       io_service(1), timer(io_service),
-      sender(io_service,ep,interface)
+      sender(io_service,ep,interface, 1000)
    {
       schedule_timer();
    }
@@ -22,7 +22,7 @@ struct TestSender {
    void on_timer() {
       n_packets++;
       n_packets_buffer = n_packets;
-      LOG(info) << "Sending test packet. First 64 bytes: " << n_packets;
+      LOG(info) << "Sending test packet. Header: " << n_packets;
       sender.send_bytes ({(char*) &n_packets_buffer,sizeof (n_packets_buffer)});
       schedule_timer();
    }
@@ -43,9 +43,12 @@ struct TestReceiver {
       io_service(1),
       receiver(std::make_shared<MCastReceiver> (io_service,ep,interface))
    {
-      receiver->on_receive() = [] (auto const&data) {
-         assert(data.size() == sizeof(size_t));
-         LOG(info) << "Received test packet. First 64 bytes: " << *((uint64_t*) data.data());
+      receiver->on_receive() = [this] (auto const&data) {
+         LOG(info) << "Received test packet no. "  
+                   << received_packets++
+                   << " size: " << data.size()
+                   << " hash: " <<  std::hash<std::string_view> {} (data)
+                   << " header: " << *((uint64_t*) data.data());
       };
    }
 
@@ -56,6 +59,7 @@ struct TestReceiver {
    
    asio::io_service io_service;
    std::shared_ptr<MCastReceiver> receiver;
+   size_t received_packets = 0; 
 };
 
 

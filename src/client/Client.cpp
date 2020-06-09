@@ -16,11 +16,13 @@ struct Client::ConnectionRec {
    ConnectionRec(asio::ip::tcp::socket &s,
                  ClientConnection::OnMessage const &on_msg,
                  ClientConnection::OnDisconnect const &on_disc)
-       : connection(std::make_shared<ClientConnection>(s, on_msg, on_disc)),
+       : last_joined_group_scan(),
+         connection(std::make_shared<ClientConnection>(s, on_msg, on_disc)),
          senders() {
       connection->start();
    }
 
+   TimeStamp last_joined_group_scan;
    std::shared_ptr<ClientConnection> connection;
    std::map<EndPoint, MCastSender> senders;
 };
@@ -66,6 +68,12 @@ void Client::on_timer() {
       }
       break;
    case State::RUNNING:
+      if (me->cfg.auto_discover_groups &&
+          sec_diff(Timer::now(),
+                   me->connection.value().last_joined_group_scan) > 10) {
+         me->connection.value().last_joined_group_scan = Timer::now();
+         scan_for_new_joined_groups();
+      }
       me->connection.value().connection->on_timer();
       break;
    }
@@ -89,10 +97,10 @@ void Client::connect() {
              me->socket, [this](auto const &m) { on_msg(m); },
              [this]() { on_disconnect(); });
          auto &senders = me->connection.value().senders;
-         for (auto ep : me->cfg.joined_groups) {
-            LOG(info) << "Adding multicast group: " << ep;
+         for (auto ep : me->cfg.groups_to_join) {
             senders[ep] =
-                MCastSender{me->io_service, ep, me->cfg.outbound_interface};
+                MCastSender{me->io_service, ep, me->cfg.outbound_interface,
+                            me->cfg.max_in_flight_datagrams_per_group};
             me->connection.value().connection->join_group(ep);
          }
       } else {
@@ -110,6 +118,25 @@ std::set<EndPoint> Client::get_current_groups() {
    return result;
 }
 
+void Client::scan_for_new_joined_groups() {
+   assert(me->state == State::RUNNING);
+
+   auto new_groups = get_joined_groups(me->cfg.auto_discover_mask);
+   auto old_groups = get_current_groups();
+
+   std::set<EndPoint> to_add;
+   std::set_difference(new_groups.begin(), new_groups.end(), old_groups.begin(),
+                       old_groups.end(), std::inserter(to_add, to_add.begin()));
+
+   auto &connection = me->connection.value().connection;
+   auto &senders = me->connection.value().senders;
+   for (auto ep : to_add) {
+      senders[ep] = MCastSender{me->io_service, ep, me->cfg.outbound_interface,
+                                me->cfg.max_in_flight_datagrams_per_group};
+      connection->join_group(ep);
+   }
+}
+
 void Client::on_msg(Message const &m) {
    switch (me->state) {
    case State::CONNECTING:
@@ -123,6 +150,8 @@ void Client::on_msg(Message const &m) {
       if (it != senders.end()) {
          it->second.send_bytes({m.payload.data(), m.header.payload_size});
       }
+      else
+         LOG(warn) << "Received message for unknown endpoint: " << m.header.end_point;
       break;
    }
    }

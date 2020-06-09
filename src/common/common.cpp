@@ -39,15 +39,15 @@ std::ostream &operator<<(std::ostream &out, EndPoint const &ep) {
 std::istream &operator>>(std::istream &in, EndPoint &ep) {
    std::string ip_port;
    in >> std::skipws >> ip_port;
-   auto fields = split(ip_port,':');
+   auto fields = split(ip_port, ':');
    ep.ip = from_quad(fields[0]);
-   ep.port  = std::stoi(fields[1]);
+   ep.port = std::stoi(fields[1]);
    return in;
 }
 
-EndPoint::EndPoint(std::string const&str) {
+EndPoint::EndPoint(std::string const &str) {
    std::stringstream s(str);
-   s >>  *this;
+   s >> *this;
 }
 
 std::vector<std::string> split(const std::string &str, char delim) {
@@ -80,6 +80,24 @@ std::vector<std::string> split(const std::string &str, char delim) {
    return result;
 }
 
+std::optional<NetMask> parse_net_mask(std::string const &mask) {
+   NetMask result;
+   auto ip_mask = split(mask, '/');
+   if (ip_mask.size() != 2)
+      return {};
+   else {
+      uint32_t mask_bits = atoi(ip_mask[1].c_str());
+      result.mask = 0;
+      for (uint32_t i = 0; i < mask_bits; i++) {
+         uint32_t this_bit = (1 << (31 - i));
+         result.mask |= this_bit;
+      }
+      uint32_t address = from_quad(ip_mask[0]);
+      result.ip = (address & result.mask);
+      return result;
+   }
+}
+
 uint32_t resolve_host_name(std::string const &host) {
    using namespace boost;
    asio::io_service ios;
@@ -94,7 +112,7 @@ uint32_t resolve_host_name(std::string const &host) {
       return it->endpoint().address().to_v4().to_uint();
 }
 
-std::set<EndPoint> get_joined_groups() {
+std::set<EndPoint> get_joined_groups(NetMask filter) {
    std::ifstream f("/proc/net/udp");
    std::string line;
    std::set<EndPoint> result;
@@ -116,16 +134,18 @@ std::set<EndPoint> get_joined_groups() {
          233.0.0.0 to 233.251.255.255	GLOP addressing
          233.252.0.0 to 233.255.255.255	AD-HOC block 3
          */
-         if ((network_order_ip >= from_quad("224.0.2.0") &&
-              network_order_ip <= from_quad("224.0.255.255")) ||
-             (network_order_ip >= from_quad("224.3.0.0") &&
-              network_order_ip <= from_quad("224.4.255.255")) ||
-             (network_order_ip >= from_quad("233.0.0.0") &&
-              network_order_ip <= from_quad("233.251.255.255")) ||
-             (network_order_ip >= from_quad("233.252.0.0") &&
-              network_order_ip <= from_quad("233.255.255.255"))) {
+         if (filter.is_match(network_order_ip) &&
+
+             ((network_order_ip >= from_quad("224.0.2.0") &&
+               network_order_ip <= from_quad("224.0.255.255")) ||
+              (network_order_ip >= from_quad("224.3.0.0") &&
+               network_order_ip <= from_quad("224.4.255.255")) ||
+              (network_order_ip >= from_quad("233.0.0.0") &&
+               network_order_ip <= from_quad("233.251.255.255")) ||
+              (network_order_ip >= from_quad("233.252.0.0") &&
+               network_order_ip <= from_quad("233.255.255.255"))))
+
             result.insert({network_order_ip, port});
-         }
       }
    }
    return result;

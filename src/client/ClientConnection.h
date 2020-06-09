@@ -20,9 +20,9 @@ class ClientConnection : public std::enable_shared_from_this<ClientConnection> {
    void on_timer();
    void join_group(EndPoint);
    void leave_group(EndPoint);
-   void shutdown();
 
  private:
+   void shutdown(asio::error_code);
    void read_header();
    void read_payload();
    struct PImpl;

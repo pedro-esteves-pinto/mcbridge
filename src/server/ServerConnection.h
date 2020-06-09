@@ -17,7 +17,7 @@ namespace mcbridge {
 class ServerConnection : public std::enable_shared_from_this<ServerConnection> {
  public:
    ServerConnection(asio::io_service &, asio::ip::tcp::socket &&,
-                    GroupManager &);
+                    GroupManager &, uint32_t  max_in_flight);
    ~ServerConnection();
    void start();
 
@@ -29,7 +29,7 @@ class ServerConnection : public std::enable_shared_from_this<ServerConnection> {
    void on_datagram(Message const &);
    void schedule_timer();
    void on_timer();
-   void shutdown();
+   void shutdown(asio::error_code);
    struct PImpl;
    std::unique_ptr<PImpl> me;
 };
