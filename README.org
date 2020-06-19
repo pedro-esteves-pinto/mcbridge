@@ -7,7 +7,7 @@ $ mcbridge server
 #+END_SRC  - 
 - On the machine that does not have access to multicast, that is the client machine:
 #+BEGIN_SRC 
-  $ mcbridge client -a <server address> -g multicast_ip:port ...
+  $ mcbridge client -s <server address> -g multicast_ip:port ...
 #+END_SRC  
 * Build
 #+BEGIN_SRC 

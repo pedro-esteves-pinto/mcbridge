@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
    // client
    auto client_cmd = app.add_subcommand("client", "Acts a client");
    std::string server_addr;
-   client_cmd->add_option("-a,--server-address", server_addr, "Server address")
+   client_cmd->add_option("-s,--server-address", server_addr, "Server address")
        ->required();
 
    client_cmd->add_option("-l,--logging-verbosity", logging_verbosity,
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
                         "Automatically discover joined groups");
 
    std::string auto_discover_mask;
-   client_cmd->add_option("-m,--discover-network-mask", auto_discover_mask,
+   client_cmd->add_option("-m,--network-mask", auto_discover_mask,
                           "Filter out discovered groups that do not match "
                           "network mask. Masks are of the form ip/mask.");
 
