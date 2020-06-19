@@ -42,7 +42,7 @@ struct EndPoint {
    EndPoint(std::string const&);
    EndPoint (uint32_t ip, uint16_t port) : ip(ip), port(port) {}
    EndPoint () : ip(0), port(0) {}
-   
+
    bool operator<(EndPoint const &rhs) const {
       if (ip != rhs.ip)
          return ip < rhs.ip;

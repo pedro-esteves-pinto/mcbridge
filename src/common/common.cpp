@@ -27,6 +27,8 @@ std::string to_quad(uint32_t ip) {
 }
 uint32_t from_quad(std::string const &ip) {
    auto quads = split(ip, '.');
+   if (quads.size()!=4)
+      throw std::runtime_error("Invalid ip");
    return (std::stoi(quads[0]) << 24) | (std::stoi(quads[1]) << 16) |
           (std::stoi(quads[2]) << 8) | std::stoi(quads[3]);
 }
@@ -39,7 +41,12 @@ std::ostream &operator<<(std::ostream &out, EndPoint const &ep) {
 std::istream &operator>>(std::istream &in, EndPoint &ep) {
    std::string ip_port;
    in >> std::skipws >> ip_port;
+   if (in.bad())
+      throw std::runtime_error("Invalid endpoint");
+   
    auto fields = split(ip_port, ':');
+   if (fields.size() != 2)
+      throw std::runtime_error("Invalid endpoint");
    ep.ip = from_quad(fields[0]);
    ep.port = std::stoi(fields[1]);
    return in;
