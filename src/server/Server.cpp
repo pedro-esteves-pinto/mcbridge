@@ -13,7 +13,7 @@ struct Server::PImpl {
        : cfg(cfg), io_service(1),
          acceptor(io_service,
                   asio::ip::tcp::endpoint(asio::ip::tcp::v4(), cfg.port)),
-         group_manager(io_service,cfg.inbound_interface) {}
+         group_manager(io_service, cfg.inbound_interface) {}
 
    ServerConfig cfg;
    asio::io_service io_service;
@@ -34,7 +34,8 @@ void Server::accept() {
    me->acceptor.async_accept([this](auto ec, auto socket) {
       if (!ec) {
          auto c = std::make_shared<ServerConnection>(
-            me->io_service, std::move(socket), me->group_manager, me->cfg.max_in_flight_datagrams_per_connection);
+             me->io_service, std::move(socket), me->group_manager,
+             me->cfg.max_in_flight_datagrams_per_connection);
          c->start();
       }
       accept();

@@ -14,7 +14,7 @@ struct GroupManager::Subscriber {
 
 struct GroupManager::Group {
    Group(asio::io_context &ctx, EndPoint ep, uint32_t interface)
-      : receiver(new MCastReceiver(ctx, ep,interface)) {
+       : receiver(new MCastReceiver(ctx, ep, interface)) {
       receiver->start();
    }
    std::shared_ptr<MCastReceiver> receiver;
@@ -22,10 +22,9 @@ struct GroupManager::Group {
 };
 
 struct GroupManager::PImpl {
-   PImpl(asio::io_context &ctx,uint32_t interface) :
-      ctx(ctx),groups(),next_sub_id(1), interface(interface)
-   {}
-   
+   PImpl(asio::io_context &ctx, uint32_t interface)
+       : ctx(ctx), groups(), next_sub_id(1), interface(interface) {}
+
    asio::io_context &ctx;
    std::map<EndPoint, std::unique_ptr<Group>> groups;
    size_t next_sub_id = 1;
@@ -33,14 +32,14 @@ struct GroupManager::PImpl {
 };
 
 GroupManager::GroupManager(asio::io_context &ctx, uint32_t interface)
-   : me(new PImpl{ctx, interface}) {}
+    : me(new PImpl{ctx, interface}) {}
 
 GroupManager::~GroupManager() {}
 
 SubID GroupManager::add_subscriber(EndPoint ep, OnMessage const &cb) {
    auto &g = me->groups[ep];
    if (!g) {
-      g = std::make_unique<Group>(me->ctx, ep,me->interface);
+      g = std::make_unique<Group>(me->ctx, ep, me->interface);
       g->receiver->on_receive() = [&subs = g->subscribers, ep](auto &bytes) {
          Message m;
          m.header.type = MessageType::MC_DATAGRAM;

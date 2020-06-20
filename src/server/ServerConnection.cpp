@@ -101,17 +101,18 @@ void ServerConnection::read() {
    auto self = shared_from_this();
 
    asio::async_read(me->socket,
-       asio::buffer(&me->buffer.header, sizeof(MessageHeader)),
-       [this, self](auto ec, auto) {
-          if (!ec && on_msg(me->buffer.header)) {
-             me->last_rcvd_hb = Timer::now();
-             read();
-          } else {
-             LOG(info) << "Error reading from " << me->remote_endpoint
-                       << " error: " << ec.message();
-             shutdown(ec);
-          }
-       });
+                    asio::buffer(&me->buffer.header, sizeof(MessageHeader)),
+                    [this, self](auto ec, auto) {
+                       if (!ec && on_msg(me->buffer.header)) {
+                          me->last_rcvd_hb = Timer::now();
+                          read();
+                       } else {
+                          LOG(info)
+                              << "Error reading from " << me->remote_endpoint
+                              << " error: " << ec.message();
+                          shutdown(ec);
+                       }
+                    });
 }
 
 bool ServerConnection::on_msg(MessageHeader const &header) {

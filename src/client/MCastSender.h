@@ -9,12 +9,16 @@
 
 namespace mcbridge {
 
+// Utility to send multicast to a specific multicast group on a
+// specific interface.
+
 class MCastSender {
  public:
    MCastSender();
    MCastSender(MCastSender &&);
    MCastSender &operator=(MCastSender &&);
-   MCastSender(asio::io_service &io, EndPoint destination, uint32_t interface, uint32_t max_in_flight);
+   MCastSender(asio::io_service &io, EndPoint destination, uint32_t interface,
+               uint32_t max_in_flight);
    ~MCastSender();
    void send_bytes(std::string_view const &bytes);
 

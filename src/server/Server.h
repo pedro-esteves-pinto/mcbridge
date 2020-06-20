@@ -5,6 +5,8 @@
 
 namespace mcbridge {
 
+// Listens on the server port, spawning a ServerConnection to handle
+// each connection.
 class Server {
  public:
    Server(ServerConfig const &);

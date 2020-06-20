@@ -8,12 +8,15 @@ namespace mcbridge {
 struct EndPoint;
 struct Message;
 
+// Manages the interaction with a mcbridge server, encoding join/leave
+// requests and decoding and forwarding received multicast datagrams.
+
 class ClientConnection : public std::enable_shared_from_this<ClientConnection> {
  public:
-   using OnMessage = std::function<void(Message const &)>;
+   using OnMCDatagram = std::function<void(Message const &)>;
    using OnDisconnect = std::function<void()>;
 
-   ClientConnection(asio::ip::tcp::socket &, OnMessage const &,
+   ClientConnection(asio::ip::tcp::socket &, OnMCDatagram const &,
                     OnDisconnect const &);
    ~ClientConnection();
    void start();

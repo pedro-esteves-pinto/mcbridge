@@ -6,7 +6,7 @@ namespace mcbridge {
 
 struct MCastSender::PImpl {
    PImpl(asio::io_service &io, uint32_t max_in_flight)
-      : socket(io), max_in_flight(max_in_flight) {
+       : socket(io), max_in_flight(max_in_flight) {
 
       // Setup our ougoing buffers ahead of time
       for (size_t i = 0; i < max_in_flight; i++) {
@@ -48,8 +48,10 @@ MCastSender &MCastSender::operator=(MCastSender &&src) {
 
 void MCastSender::send_bytes(std::string_view const &bytes) {
    if (me->free_buffers.empty()) {
-      LOG(warn) << "Cannot send multicast to " << me->endpoint << " fast enough. "
-                << " Maximum of " << me->all_buffers.size() << " messages in flight reached,"
+      LOG(warn) << "Cannot send multicast to " << me->endpoint
+                << " fast enough. "
+                << " Maximum of " << me->all_buffers.size()
+                << " messages in flight reached,"
                 << " dropping current message";
       return;
    }
@@ -57,11 +59,10 @@ void MCastSender::send_bytes(std::string_view const &bytes) {
    auto buffer = me->free_buffers.back();
    me->free_buffers.pop_back();
    *buffer = bytes;
-   
+
    me->socket.async_send_to(
-      asio::buffer(*buffer),
-      me->endpoint, [this,buffer](auto es, auto) {
-         me->free_buffers.push_back(buffer);
+       asio::buffer(*buffer), me->endpoint, [this, buffer](auto es, auto) {
+          me->free_buffers.push_back(buffer);
           if (es)
              LOG(error) << "Error sending to " << me->endpoint
                         << " error: " << es.message();

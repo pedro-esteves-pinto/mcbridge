@@ -14,10 +14,14 @@ class GroupManager;
 
 namespace mcbridge {
 
+// Manages a connection to a specific client, listening to join/leave
+// requests and heartbeats as well as forwarding multicas traffic over
+// the connection.
+
 class ServerConnection : public std::enable_shared_from_this<ServerConnection> {
  public:
    ServerConnection(asio::io_service &, asio::ip::tcp::socket &&,
-                    GroupManager &, uint32_t  max_in_flight);
+                    GroupManager &, uint32_t max_in_flight);
    ~ServerConnection();
    void start();
 

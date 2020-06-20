@@ -14,7 +14,7 @@ enum class Client::State { PAUSED, CONNECTING, RUNNING };
 
 struct Client::ConnectionRec {
    ConnectionRec(asio::ip::tcp::socket &s,
-                 ClientConnection::OnMessage const &on_msg,
+                 ClientConnection::OnMCDatagram const &on_msg,
                  ClientConnection::OnDisconnect const &on_disc)
        : last_joined_group_scan(),
          connection(std::make_shared<ClientConnection>(s, on_msg, on_disc)),
@@ -145,13 +145,14 @@ void Client::on_msg(Message const &m) {
    case State::PAUSED:
       break;
    case State::RUNNING: {
+      assert(m.header.type == MessageType::MC_DATAGRAM);
       auto &senders = me->connection.value().senders;
       auto it = senders.find(m.header.end_point);
-      if (it != senders.end()) {
+      if (it != senders.end())
          it->second.send_bytes({m.payload.data(), m.header.payload_size});
-      }
       else
-         LOG(warn) << "Received message for unknown endpoint: " << m.header.end_point;
+         LOG(warn) << "Received message for unknown endpoint: "
+                   << m.header.end_point;
       break;
    }
    }

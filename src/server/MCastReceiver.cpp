@@ -17,7 +17,8 @@ struct MCastReceiver::PImpl {
    size_t n_packets;
 };
 
-MCastReceiver::MCastReceiver(asio::io_service &io, EndPoint group, uint32_t interface_ip)
+MCastReceiver::MCastReceiver(asio::io_service &io, EndPoint group,
+                             uint32_t interface_ip)
     : me(new PImpl(io, group)) {
    LOG(info) << "Starting multicast receiver for " << me->group;
    using namespace asio;
@@ -30,11 +31,12 @@ MCastReceiver::MCastReceiver(asio::io_service &io, EndPoint group, uint32_t inte
    me->socket.bind(ip::udp::endpoint(ip::address_v4(group.ip), group.port));
 
    // Set a generous receive buffer
-   me->socket.set_option(asio::socket_base::receive_buffer_size (10*1024*1024));
+   me->socket.set_option(
+       asio::socket_base::receive_buffer_size(10 * 1024 * 1024));
 
    // Join the group, on the interface specified by interface_ip
-   me->socket.set_option(ip::multicast::join_group(ip::address_v4(group.ip),
-                                                   ip::address_v4(interface_ip)));
+   me->socket.set_option(ip::multicast::join_group(
+       ip::address_v4(group.ip), ip::address_v4(interface_ip)));
 }
 
 void MCastReceiver::start() { receive(); }

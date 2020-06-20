@@ -27,7 +27,7 @@ std::string to_quad(uint32_t ip) {
 }
 uint32_t from_quad(std::string const &ip) {
    auto quads = split(ip, '.');
-   if (quads.size()!=4)
+   if (quads.size() != 4)
       throw std::runtime_error("Invalid ip");
    return (std::stoi(quads[0]) << 24) | (std::stoi(quads[1]) << 16) |
           (std::stoi(quads[2]) << 8) | std::stoi(quads[3]);
@@ -43,7 +43,7 @@ std::istream &operator>>(std::istream &in, EndPoint &ep) {
    in >> std::skipws >> ip_port;
    if (in.bad())
       throw std::runtime_error("Invalid endpoint");
-   
+
    auto fields = split(ip_port, ':');
    if (fields.size() != 2)
       throw std::runtime_error("Invalid endpoint");
@@ -75,7 +75,7 @@ std::vector<std::string> split(const std::string &str, char delim) {
          }
       } else {
          if (state == State::DELIM) {
-            // was consuming delimiters and just spotted  the
+            // Was consuming delimiters and just spotted  the
             // beggining of a token, create a new entry
             // in the token vector and switch states
             result.push_back({});

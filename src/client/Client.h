@@ -6,6 +6,10 @@
 namespace mcbridge {
 struct Message;
 
+// Orchestrates the connection to a mcbridge server, the creation of
+// new multicast senders and possibly the discovery of new joined
+// groups.
+
 class Client {
  public:
    explicit Client(ClientConfig const &);

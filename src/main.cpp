@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
    auto client_cmd = app.add_subcommand("client", "Acts a client");
    std::string server_addr;
    client_cmd->add_option("-s,--server-address", server_addr, "Server address")
-      ->required();
+       ->required();
 
    client_cmd->add_option("-l,--logging-verbosity", logging_verbosity,
                           "Logging verbosity (0 to 4)");
@@ -65,9 +65,9 @@ int main(int argc, char **argv) {
 
    std::string groups_file;
    client_cmd
-      ->add_option("-f,--groups-file", groups_file,
-                   "Read multicast groups to join from file")
-      ->check(CLI::ExistingFile);
+       ->add_option("-f,--groups-file", groups_file,
+                    "Read multicast groups to join from file")
+       ->check(CLI::ExistingFile);
    std::vector<std::string> groups;
    client_cmd->add_option("-g,--group", groups,
                           "Multicast groups to join in the form ip:port");
@@ -75,8 +75,8 @@ int main(int argc, char **argv) {
    client_cmd->add_option("-i,--interface", interface,
                           "Interface to use for outbound multicast");
    client_cmd->add_option(
-      "-x,--max-in-flight-datagrams", max_in_flight_datagrams,
-      "Maximum number of inflight datagrams per multicast group", 1000);
+       "-x,--max-in-flight-datagrams", max_in_flight_datagrams,
+       "Maximum number of inflight datagrams per multicast group", 1000);
 
    // server
    auto server_cmd = app.add_subcommand("server", "Acts as a server");
@@ -86,11 +86,11 @@ int main(int argc, char **argv) {
    server_cmd->add_option("-i,--interface", interface,
                           "Interface to use for inbound multicast");
    server_cmd->add_option(
-      "-x,--max-in-flight-datagrams", max_in_flight_datagrams,
-      "Maximum number of inflight datagrams per client", 5000);
+       "-x,--max-in-flight-datagrams", max_in_flight_datagrams,
+       "Maximum number of inflight datagrams per client", 5000);
    // test_send
    auto test_send = app.add_subcommand(
-      "test_send", "Send a small multicast packet every few seconds");
+       "test_send", "Send a small multicast packet every few seconds");
    std::string group_s = "224.0.255.255:30000";
    test_send->add_option("-g,--group", group_s, "Multicast group to send to",
                          "224.0.255.255:30000");
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
                          "Interface to use for outbound multicast");
 
    auto test_recv = app.add_subcommand(
-      "test_recv", "Receive multicast and print a few bytes to screen");
+       "test_recv", "Receive multicast and print a few bytes to screen");
    std::string group_c = "224.0.255.255:30000";
    test_recv->add_option("-g,--group", group_c, "Multicast group to join",
                          "224.0.255.255:30000");
@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
             LOG(fatal) << "Unknown host: " << server_addr;
             exit(-1);
          }
-         cfg.server_address = {server,port};
+         cfg.server_address = {server, port};
          cfg.max_in_flight_datagrams_per_group = max_in_flight_datagrams;
          return Client{cfg}.run();
       } else if (*server_cmd) {
@@ -148,8 +148,7 @@ int main(int argc, char **argv) {
          return Test::send(group_s, interface_ip);
       else if (*test_recv)
          return Test::recv(group_c, interface_ip);
-   }
-   catch (std::runtime_error const &e) {
+   } catch (std::runtime_error const &e) {
       LOG(fatal) << e.what();
       exit(-1);
    }
