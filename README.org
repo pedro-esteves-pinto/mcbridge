@@ -8,7 +8,7 @@ $ mcbridge server
 - On the machine that does not have access to multicast, that is the client machine:
 #+BEGIN_SRC 
   $ mcbridge client -s <server address> -g multicast_ip:port ...
-#+END_SRC  
+#+END_SRC
 * Build
 #+BEGIN_SRC 
 $ git clone --recursive https://github.com/pedro-esteves-pinto/mcbridge.git
