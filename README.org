@@ -17,6 +17,6 @@ $ mkdir build && cd build && cmake ..
 $ make 
 #+END_SRC  - 
 * Acknowledgments
-- Thanks to [[https://github.com/chriskohlhoff][chriskohlhoff]] for ASIO and [[https://github.com/CLIUtils/CLI11][CLIUtils]] for CLI11
+- Thanks to [[https://github.com/chriskohlhoff][chriskohlhoff]] for [[https://github.com/chriskohlhoff/asioi][ASIO]] and [[https://github.com/CLIUtils][CLIUtils]] for [[https://github.com/CLIUtils/CLI11][CLI11]]
 
 
