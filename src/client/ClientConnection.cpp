@@ -11,7 +11,8 @@ struct ClientConnection::PImpl {
    Message buffer;
    TimeStamp last_sent_hb;
    TimeStamp last_rcvd_hb;
-   size_t sequence_number = 0;
+   size_t sent_sequence_number = 0;
+   size_t recv_sequence_number = 0;
 };
 
 ClientConnection::ClientConnection(asio::ip::tcp::socket &s,
@@ -37,7 +38,7 @@ void ClientConnection::on_timer() {
          m->header.end_point = {};
          m->header.type = MessageType::HB;
          m->header.payload_size = 0;
-         m->header.sequence_number = me->sequence_number++;
+         m->header.sequence_number = me->sent_sequence_number++;
          auto ptr = m.get();
          LOG(diag) << "Sending HB to " << me->socket.remote_endpoint();
          auto self = shared_from_this();
@@ -57,7 +58,7 @@ void ClientConnection::join_group(EndPoint ep) {
    m->header.end_point = ep;
    m->header.type = MessageType::JOIN;
    m->header.payload_size = 0;
-   m->header.sequence_number = me->sequence_number++;
+   m->header.sequence_number = me->sent_sequence_number++;
    me->last_sent_hb = Timer::now();
    auto ptr = m.get();
    auto self = shared_from_this();
@@ -74,7 +75,7 @@ void ClientConnection::leave_group(EndPoint ep) {
    m->header.end_point = ep;
    m->header.type = MessageType::LEAVE;
    m->header.payload_size = 0;
-   m->header.sequence_number = me->sequence_number++;
+   m->header.sequence_number = me->sent_sequence_number++;
    me->last_sent_hb = Timer::now();
    me->last_sent_hb = Timer::now();
    auto ptr = m.get();
@@ -96,6 +97,17 @@ void ClientConnection::read_header() {
                        << me->buffer.header.sequence_number
                        << " type: " << (int)me->buffer.header.type
                        << " payload_size: " << me->buffer.header.payload_size;
+
+             if (me->buffer.header.sequence_number != me->recv_sequence_number) {
+                LOG(error) << "Expected message with sequence number " << me->recv_sequence_number +1
+                           << " but received " << me->buffer.header.sequence_number
+                           << " type: " << (int)me->buffer.header.type
+                           << " payload_size: " << me->buffer.header.payload_size;
+                shutdown(ec);
+             }
+             else
+                me->recv_sequence_number++;
+
              me->last_rcvd_hb = Timer::now();
              if (me->buffer.header.type == MessageType::HB) {
                 LOG(diag) << "Received HB";
@@ -119,7 +131,7 @@ void ClientConnection::read_payload() {
        [this, self](auto ec, auto bytes_read) {
           if (!ec) {
              LOG(diag) << "Received msg " << me->buffer.header.sequence_number
-                       << " for "
+                       << " for " << me->buffer.header.end_point
                        << " read: " << bytes_read
                        << " of: " << me->buffer.header.payload_size << " "
                        << me->buffer.header.end_point << " first 64 bytes: "

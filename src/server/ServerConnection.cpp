@@ -36,7 +36,7 @@ struct ServerConnection::PImpl {
    TimeStamp last_sent_hb;
    std::string remote_endpoint;
    asio::steady_timer timer;
-   size_t sequence_number = 0;
+   size_t sequence_number = 1;
 
    std::vector<Message *> free_buffers;
    std::vector<std::unique_ptr<Message>> all_buffers;
