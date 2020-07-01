@@ -64,8 +64,8 @@ void GroupManager::remove_subscriber(SubID id) {
             if (group->subscribers.empty()) {
                group->receiver->stop();
                me->groups.erase(end_point);
-               return;
             }
+            return;
          }
       }
    }
