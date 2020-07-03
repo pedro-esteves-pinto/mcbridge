@@ -4,8 +4,7 @@ project(mcbridge)
 # helpers to make it safe to use globing to define files in build
 include(cmake/safe_dep_glob.cmake)
 
-
-set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
+set (BASE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} \
   -Wall \
   -g \
   -pedantic \
@@ -14,7 +13,11 @@ set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} \
   -fdiagnostics-color \
   -Werror ")
 
-set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} \
+set (CMAKE_CXX_FLAGS_DEBUG "${BASE_CXX_FLAGS} \
+  -fsanitize=undefined
+  -fsanitize=address")
+
+set (CMAKE_CXX_FLAGS_RELEASE "${BASE_CXX_FLAGS} \
   -DNDEBUG \
   -flto \
   -O3")
